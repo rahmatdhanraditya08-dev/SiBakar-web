@@ -3,21 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SiBAKAR – Suhu Monitor</title>
+  <title>SiBAKAR Dashboard</title>
   <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div class="container">
-    <h1>SiBAKAR</h1>
-    <h2>Suhu Monitor</h2>
-    <div id="temperature" class="temp">-- &deg;C</div>
-    <div id="status" class="status">Status: --</div>
-  </div>
 
-  <!-- Firebase JS SDK -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
-  <!-- App logic -->
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- SheetJS (XLSX) untuk export Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>SiBAKAR</h1>
+    <p>Sistem pendeteksi dan penanganan kebakaran untuk rumah dan industri skala kecil</p>
+  </header>
+
+  <main>
+    <section class="monitoring">
+      <div class="current-temp">
+        <span id="temperature">-- °C</span>
+      </div>
+      <canvas id="tempChart"></canvas>
+    </section>
+
+    <section class="log-section">
+      <button id="exportBtn">Export ke Excel</button>
+      <table id="logTable">
+        <thead>
+          <tr>
+            <th>Hari</th>
+            <th>Tanggal</th>
+            <th>Waktu</th>
+            <th>Suhu (°C)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
   <script type="module" src="app.js"></script>
 </body>
 </html>
