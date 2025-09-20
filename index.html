@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>SiBAKAR — Dashboard Monitoring Kebakaran</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
@@ -11,7 +11,7 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-  <!-- Banner Peringatan Api -->
+  <!-- banner api -->
   <div id="fireBanner" class="banner">🔥 API TERDETEKSI! 🔥</div>
 
   <header>
@@ -21,10 +21,9 @@
 
   <main>
     <section class="dashboard">
-      <h2>Monitoring Sensor & Relay</h2>
+      <h2>Monitoring Sensor</h2>
 
       <div class="card-row">
-        <!-- Suhu -->
         <div class="sensor-card suhu">
           <h3>Suhu</h3>
           <div class="value" id="temperature">-- °C</div>
@@ -32,7 +31,6 @@
           <div class="insight" id="insight-temp">Insight suhu: --</div>
         </div>
 
-        <!-- MQ2 -->
         <div class="sensor-card mq2">
           <h3>MQ2 (Gas)</h3>
           <div class="value" id="mq2">-- ppm</div>
@@ -40,7 +38,6 @@
           <div class="insight" id="insight-mq2">Insight MQ2: --</div>
         </div>
 
-        <!-- MQ7 -->
         <div class="sensor-card mq7">
           <h3>MQ7 (CO)</h3>
           <div class="value" id="mq7">-- ppm</div>
@@ -48,19 +45,9 @@
           <div class="insight" id="insight-mq7">Insight MQ7: --</div>
         </div>
 
-        <!-- Api -->
         <div class="sensor-card api">
           <h3>Api</h3>
           <div class="value" id="apiStatus">--</div>
-        </div>
-
-        <!-- Relay Status -->
-        <div class="sensor-card relay">
-          <h3>Relay</h3>
-          <div class="value" id="relay1Status">R1: --</div>
-          <div class="value" id="relay2Status">R2: --</div>
-          <div class="value" id="relay3Status">R3: --</div>
-          <div class="value" id="relay4Status">R4: --</div>
         </div>
       </div>
 
@@ -70,17 +57,8 @@
         <table id="logTable">
           <thead>
             <tr>
-              <th>Hari</th>
-              <th>Tanggal</th>
-              <th>Waktu</th>
-              <th>Suhu (°C)</th>
-              <th>MQ2 (ppm)</th>
-              <th>MQ7 (ppm)</th>
-              <th>Api</th>
-              <th>R1</th>
-              <th>R2</th>
-              <th>R3</th>
-              <th>R4</th>
+              <th>Hari</th><th>Tanggal</th><th>Waktu</th>
+              <th>Suhu</th><th>MQ2</th><th>MQ7</th><th>Api</th>
             </tr>
           </thead>
           <tbody></tbody>
