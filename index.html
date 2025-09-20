@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SiBAKAR Dashboard</title>
+  <title>SiBAKAR — Dashboard Monitoring Kebakaran</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
@@ -11,9 +11,12 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 <body>
+  <!-- Banner Peringatan Api -->
+  <div id="fireBanner" class="banner">🔥 API TERDETEKSI! 🔥</div>
+
   <header>
-    <h1>🔥 SiBAKAR Dashboard</h1>
-    <p>Sistem pendeteksi dan penanganan kebakaran untuk rumah & industri skala kecil</p>
+    <h1>🔥 SiBAKAR</h1>
+    <p>Dashboard Monitoring Kebakaran Rumah & Industri Skala Kecil</p>
   </header>
 
   <main>
@@ -41,6 +44,11 @@
           <canvas id="mq7Chart" class="mini-chart"></canvas>
           <div class="insight" id="insight-mq7">Insight MQ7: --</div>
         </div>
+
+        <div class="sensor-card api">
+          <h3>Api</h3>
+          <div class="value" id="apiStatus">--</div>
+        </div>
       </div>
 
       <div class="log-section">
@@ -55,6 +63,7 @@
               <th>Suhu (°C)</th>
               <th>MQ2 (ppm)</th>
               <th>MQ7 (ppm)</th>
+              <th>Api</th>
             </tr>
           </thead>
           <tbody></tbody>
