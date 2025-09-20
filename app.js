@@ -13,32 +13,30 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // DOM Elements
-const tempEl    = document.getElementById("temperature");
-const mq2El     = document.getElementById("mq2");
-const mq7El     = document.getElementById("mq7");
-const apiEl     = document.getElementById("apiStatus");
-const logTable  = document.querySelector("#logTable tbody");
-const exportBtn = document.getElementById("exportBtn");
-const banner    = document.getElementById("fireBanner");
-const apiCard   = document.querySelector(".sensor-card.api");
+const tempEl       = document.getElementById("temperature");
+const mq2El        = document.getElementById("mq2");
+const mq7El        = document.getElementById("mq7");
+const apiEl        = document.getElementById("apiStatus");
+const relay1El     = document.getElementById("relay1Status");
+const relay2El     = document.getElementById("relay2Status");
+const relay3El     = document.getElementById("relay3Status");
+const relay4El     = document.getElementById("relay4Status");
+const logTable     = document.querySelector("#logTable tbody");
+const exportBtn    = document.getElementById("exportBtn");
+const banner       = document.getElementById("fireBanner");
+const apiCard      = document.querySelector(".sensor-card.api");
 
-// Chart setup
+// Chart setup (sama seperti sebelumnya)
 function makeChart(ctx, color) {
   return new Chart(ctx, {
     type: "line",
-    data: {
-      labels: [],
-      datasets: [{ data: [], borderColor: color, tension: 0.3, pointRadius: 0 }]
-    },
-    options: {
-      plugins:{ legend:{ display:false }},
-      scales:{ x:{display:false}, y:{display:false}}
-    }
+    data: { labels: [], datasets: [{ data: [], borderColor: color, tension: 0.3, pointRadius: 0 }] },
+    options: { plugins:{ legend:{ display:false }}, scales:{ x:{display:false}, y:{display:false}}}
   });
 }
 const tempChart = makeChart(document.getElementById("tempChart"), "#e53935");
-const mq2Chart  = makeChart(document.getElementById("mq2Chart"), "#fb8c00");
-const mq7Chart  = makeChart(document.getElementById("mq7Chart"), "#1e88e5");
+const mq2Chart  = makeChart(document.getElementById("mq2Chart"),  "#fb8c00");
+const mq7Chart  = makeChart(document.getElementById("mq7Chart"),  "#1e88e5");
 
 // History for insight
 const history = { suhu: [], mq2: [], mq7: [] };
@@ -51,44 +49,52 @@ function genInsight(arr, label, thresh) {
   return `${label} ${trend} (${delta}), ${status}`;
 }
 
-// Notification setup
+// Setup Notification
 if ("Notification" in window) Notification.requestPermission();
 function notifyFire() {
-  if (Notification.permission==="granted") {
-    new Notification("🔥 SiBAKAR Alert", { body:"Api terdeteksi!" });
+  if (Notification.permission === "granted") {
+    new Notification("🔥 SiBAKAR Alert", { body: "Api terdeteksi!" });
   }
 }
 
 // Real-time listener
 onValue(ref(db, "/sensor"), snapshot => {
-  const data = snapshot.val() || {};
-  const suhu = data.suhu    ?? 0;
-  const mq2  = data.gas_mq2 ?? 0;
-  const mq7  = data.gas_mq7 ?? 0;
-  const api  = data.api     ?? false;
+  const raw  = snapshot.val() || {};
+  const suhu = raw.suhu    ?? 0;
+  const mq2  = raw.gas_mq2 ?? 0;
+  const mq7  = raw.gas_mq7 ?? 0;
+  const api  = raw.api     ?? false;
+  const r1   = raw.relay1  ?? false;
+  const r2   = raw.relay2  ?? false;
+  const r3   = raw.relay3  ?? false;
+  const r4   = raw.relay4  ?? false;
 
   // Update teks
-  tempEl.textContent = `${suhu.toFixed(1)} °C`;
-  mq2El.textContent  = `${mq2.toFixed(1)} ppm`;
-  mq7El.textContent  = `${mq7.toFixed(1)} ppm`;
-  apiEl.textContent  = api ? "API" : "AMAN";
+  tempEl.textContent   = `${suhu.toFixed(1)} °C`;
+  mq2El.textContent    = `${mq2.toFixed(1)} ppm`;
+  mq7El.textContent    = `${mq7.toFixed(1)} ppm`;
+  apiEl.textContent    = api ? "API" : "AMAN";
+  relay1El.textContent = `R1: ${r1? "ON":"OFF"}`;
+  relay2El.textContent = `R2: ${r2? "ON":"OFF"}`;
+  relay3El.textContent = `R3: ${r3? "ON":"OFF"}`;
+  relay4El.textContent = `R4: ${r4? "ON":"OFF"}`;
 
-  // Api card & banner
+  // Banner & card Api
   apiCard.classList.toggle("danger", api);
   banner.classList.toggle("show", api);
   if (api) notifyFire();
 
   // Timestamp
-  const now = new Date().toLocaleTimeString("id-ID");
+  const waktu = new Date().toLocaleTimeString("id-ID");
 
   // Update charts
-  [ [tempChart, suhu], [mq2Chart, mq2], [mq7Chart, mq7] ].forEach(([chart, val])=>{
-    chart.data.labels.push(now);
-    chart.data.datasets[0].data.push(val);
-    chart.update();
+  [[tempChart, suhu],[mq2Chart, mq2],[mq7Chart, mq7]].forEach(([c,v])=>{
+    c.data.labels.push(waktu);
+    c.data.datasets[0].data.push(v);
+    c.update();
   });
 
-  // Insights
+  // Update insights
   history.suhu.push(suhu);
   history.mq2.push(mq2);
   history.mq7.push(mq7);
@@ -100,18 +106,22 @@ onValue(ref(db, "/sensor"), snapshot => {
     "Insight MQ7: " + genInsight(history.mq7, "Gas MQ7", 100);
 
   // Tambah baris log
-  const hari    = new Date().toLocaleDateString("id-ID", { weekday:"long" });
-  const tanggal = new Date().toLocaleDateString("id-ID");
-  const waktu   = new Date().toLocaleTimeString("id-ID");
-  const row     = document.createElement("tr");
+  const row  = document.createElement("tr");
+  const hari = new Date().toLocaleDateString("id-ID", { weekday:"long" });
+  const tgl  = new Date().toLocaleDateString("id-ID");
+  const wrt  = new Date().toLocaleTimeString("id-ID");
   row.innerHTML = `
     <td>${hari}</td>
-    <td>${tanggal}</td>
-    <td>${waktu}</td>
+    <td>${tgl}</td>
+    <td>${wrt}</td>
     <td>${suhu.toFixed(1)}</td>
     <td>${mq2.toFixed(1)}</td>
     <td>${mq7.toFixed(1)}</td>
-    <td>${api ? "API" : "AMAN"}</td>
+    <td>${api? "API":"AMAN"}</td>
+    <td>${r1? "1":"0"}</td>
+    <td>${r2? "1":"0"}</td>
+    <td>${r3? "1":"0"}</td>
+    <td>${r4? "1":"0"}</td>
   `;
   logTable.appendChild(row);
 });
@@ -119,7 +129,11 @@ onValue(ref(db, "/sensor"), snapshot => {
 // Export ke Excel
 exportBtn.addEventListener("click", () => {
   const wb   = XLSX.utils.book_new();
-  const rows = [["Hari","Tanggal","Waktu","Suhu","MQ2","MQ7","Api"]];
+  const rows = [[
+    "Hari","Tanggal","Waktu",
+    "Suhu (°C)","MQ2 (ppm)","MQ7 (ppm)",
+    "Api","R1","R2","R3","R4"
+  ]];
   document.querySelectorAll("#logTable tbody tr").forEach(tr => {
     rows.push(Array.from(tr.children).map(td => td.textContent));
   });
