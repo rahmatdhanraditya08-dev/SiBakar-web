@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard SiBAKAR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f2f5;
+    }
+    .header {
+      text-align: center;
+      padding: 30px 20px 10px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .sibakar-title {
+      font-size: 3em;
+      font-weight: 800;
+      color: #ff5722;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .subtitle {
+      font-size: 1.1em;
+      color: #555;
+      margin-top: 8px;
+      font-style: italic;
+    }
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      padding: 20px;
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      flex: 1 1 300px;
+      min-width: 280px;
+    }
+    h2 {
+      margin-top: 0;
+      color: #2c3e50;
+      font-size: 1.3em;
+    }
+    .status-api {
+      font-size: 2.5em;
+      text-align: center;
+    }
+    .status-api span {
+      font-size: 1em;
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .info {
+      font-size: 1.1em;
+      margin: 10px 0;
+    }
+    canvas {
+      max-width: 100%;
+      margin-top: 10px;
+    }
+    .buttons {
+      text-align: center;
+      margin: 30px 0;
+    }
+    .buttons button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+    .buttons button:hover {
+      background-color: #2980b9;
+    }
+    .alert-box {
+      text-align: center;
+      margin: 20px auto;
+      padding: 15px;
+      max-width: 800px;
+      font-size: 1.1em;
+      font-weight: bold;
+      border-radius: 10px;
+      display: none;
+      background-color: #ffe0e0;
+      color: #c0392b;
+      box-shadow: 0 0 10px rgba(255,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="sibakar-title">🔥 SiBAKAR 🔥</div>
+    <div class="subtitle">Sistem Pendeteksi dan Penanganan Kebakaran untuk Rumah dan Industri Skala Kecil</div>
+  </div>
+
+  <div class="dashboard">
+    <div class="card">
+      <h2>Status Api</h2>
+      <div class="status-api" id="apiStatus">🪵<span id="apiText">Tidak ada api</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Suhu 🌡️</h2>
+      <div class="info">Suhu saat ini: <span id="suhuValue">00.0</span> °C</div>
+      <canvas id="suhuChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h2>Gas Berbahaya MQ2 💨</h2>
+      <div class="info">Kadar: <span id="mq2Value">0000</span> ppm</div>
+      <canvas id="mq2Chart"></canvas>
+    </div>
+
+    <div class="card">
+      <h2>Gas CO MQ7 🧪</h2>
+      <div class="info">Kadar: <span id="mq7Value">0000</span> ppm</div>
+      <canvas id="mq7Chart"></canvas>
+    </div>
+  </div>
+
+  <div class="alert-box" id="alertBox"></div>
+
+  <div class="buttons">
+    <button onclick="refreshData()">🔄 Refresh</button>
+    <button onclick="exportExcel()">📤 Export Excel</button>
+  </div>
+
+  <script>
+    // Dummy data
+    let suhuData = [30, 32, 33, 34, 41];
+    let mq2Data = [100, 150, 200, 250, 350];
+    let mq7Data = [50, 60, 70, 80, 120];
+    let labels = ["10:00", "10:01", "10:02", "10:03", "10:04"];
+
+    // Deteksi api berdasarkan ambang batas MQ2/MQ7
+    let apiDetected = false;
+    function cekApi() {
+      const mq2 = mq2Data[mq2Data.length - 1];
+      const mq7 = mq7Data[mq7Data.length - 1];
+      apiDetected = (mq2 > 300 || mq7 > 100);
+    }
+
+    function updateStatusApi() {
+      const icon = document.getElementById("apiStatus");
+      const text = document.getElementById("apiText");
+      if (apiDetected) {
+        icon.innerHTML = "🔥<span>TERDETEKSI API!</span>";
+        text.style.color = "red";
+      } else {
+        icon.innerHTML = "🪵<span>Tidak ada api</span>";
+        text.style.color = "#2c3e50";
+      }
+    }
+
+    function tampilkanPeringatan() {
+      const alertBox = document.getElementById("alertBox");
+      let pesan = [];
+
+      if (apiDetected) pesan.push("🔥 Api terdeteksi!");
+      if (suhuData[suhuData.length - 1] > 40) pesan.push("🌡️ Suhu tinggi!");
+      if (mq2Data[mq2Data.length - 1] > 300 || mq7Data[mq7Data.length - 1] > 100)
+        pesan.push("💨 Gas berbahaya terdeteksi!");
+
+      if (pesan.length > 0) {
+        alertBox.innerHTML = pesan.join(" | ");
+        alertBox.style.display = "block";
+      } else {
+        alertBox.style.display = "none";
+      }
+    }
+
+    function renderCharts() {
+      new Chart(document.getElementById("suhuChart"), {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Suhu (°C)",
+            data: suhuData,
+            borderColor: "blue",
+            fill: false
+          }]
+        }
+      });
+
+      new Chart(document.getElementById("mq2Chart"), {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Gas MQ2 (ppm)",
+            data: mq2Data,
+            borderColor: "orange",
+            fill: false
+          }]
+        }
+      });
+
+      new Chart(document.getElementById("mq7Chart"), {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Gas MQ7 (ppm)",
+            data: mq7Data,
+            borderColor: "red",
+            fill: false
+          }]
+        }
+      });
+    }
+
+function exportExcel() {
+  const data = [
+    ["Waktu", "Suhu (°C)", "Gas MQ2 (ppm)", "Gas MQ7 (ppm)"]
+  ];
+
+  for (let i = 0; i < labels.length; i++) {
+    data.push([labels[i], suhuData[i], mq2Data[i], mq7Data[i]]);
+  }
+
+  const worksheet = XLSX.utils.aoa_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Data Sensor");
+
+  XLSX.writeFile(workbook, "SiBAKAR_Data.xlsx");
+}
+
+    // Inisialisasi
+    cekApi();
+    document.getElementById("suhuValue").textContent = suhuData[suhuData.length - 1];
+    document.getElementById("mq2Value").textContent = mq2Data[mq2Data.length - 1];
+    document.getElementById("mq7Value").textContent = mq7Data[mq7Data.length - 1];
+    updateStatusApi();
+    renderCharts();
+    tampilkanPeringatan();
+  </script>
+</body>
+</html>
