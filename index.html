@@ -11,7 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- SheetJS (XLSX) untuk export Excel -->
+  <!-- SheetJS (XLSX) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -22,10 +22,15 @@
 
   <main>
     <section class="monitoring">
-      <div class="current-temp">
-        <span id="temperature">-- °C</span>
+      <div class="current-values">
+        <span id="temperature">Suhu: -- °C</span> |
+        <span id="mq2">MQ2: -- ppm</span> |
+        <span id="mq7">MQ7: -- ppm</span>
       </div>
+
       <canvas id="tempChart"></canvas>
+      <canvas id="mq2Chart"></canvas>
+      <canvas id="mq7Chart"></canvas>
     </section>
 
     <section class="log-section">
@@ -37,6 +42,8 @@
             <th>Tanggal</th>
             <th>Waktu</th>
             <th>Suhu (°C)</th>
+            <th>MQ2 (ppm)</th>
+            <th>MQ7 (ppm)</th>
           </tr>
         </thead>
         <tbody></tbody>

@@ -1,94 +1,73 @@
-/* Layout landscape dasar */
 body {
+  font-family: 'Segoe UI', sans-serif;
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f0f2f5;
+  padding: 0;
+  background: #f4f4f4;
   color: #333;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
 }
 
 header {
+  background: #d32f2f;
+  color: white;
+  padding: 20px;
   text-align: center;
-  background: #0275d8;
-  color: #fff;
-  padding: 1rem;
 }
 
 header h1 {
   margin: 0;
-  font-size: 2.5rem;
-}
-
-header p {
-  margin: 0.5rem 0 0;
-  font-size: 1rem;
+  font-size: 2em;
 }
 
 main {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  padding: 1rem;
-  gap: 1rem;
-  flex-wrap: wrap;
+  padding: 20px;
 }
 
-.monitoring {
-  flex: 2;
-  background: #fff;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.current-values {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  background: #fff3e0;
+  padding: 10px;
+  border-left: 5px solid #ff9800;
 }
 
-.current-temp {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  color: #d9534f;
+canvas {
+  max-width: 100%;
+  margin: 20px 0;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
 }
 
 .log-section {
-  flex: 1;
-  background: #fff;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
+  margin-top: 30px;
 }
 
 #exportBtn {
-  padding: 0.5rem;
-  background: #5cb85c;
-  color: #fff;
+  background: #388e3c;
+  color: white;
   border: none;
-  border-radius: 4px;
-  margin-bottom: 1rem;
+  padding: 10px 20px;
+  margin-bottom: 10px;
   cursor: pointer;
+  font-weight: bold;
 }
 
 #exportBtn:hover {
-  background: #4cae4c;
+  background: #2e7d32;
 }
 
-#logTable {
+table {
   width: 100%;
   border-collapse: collapse;
+  background: white;
 }
 
-#logTable th,
-#logTable td {
-  border: 1px solid #ddd;
-  padding: 0.5rem;
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
   text-align: center;
-  font-size: 0.9rem;
 }
 
-#logTable th {
-  background: #f7f7f7;
+th {
+  background: #eeeeee;
 }
