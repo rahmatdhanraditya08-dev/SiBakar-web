@@ -1,53 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SiBAKAR Dashboard</title>
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- SheetJS (XLSX) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <header>
-    <h1>SiBAKAR</h1>
-    <p>Sistem pendeteksi dan penanganan kebakaran untuk rumah dan industri skala kecil</p>
+    <h1>🔥 SiBAKAR Dashboard</h1>
+    <p>Sistem pendeteksi dan penanganan kebakaran untuk rumah & industri skala kecil</p>
   </header>
 
   <main>
-    <section class="monitoring">
-      <div class="current-values">
-        <span id="temperature">Suhu: -- °C</span> |
-        <span id="mq2">MQ2: -- ppm</span> |
-        <span id="mq7">MQ7: -- ppm</span>
+    <section class="dashboard">
+      <h2>Monitoring Sensor</h2>
+
+      <div class="card-row">
+        <div class="sensor-card suhu">
+          <h3>Suhu</h3>
+          <div class="value" id="temperature">-- °C</div>
+          <canvas id="tempChart" class="mini-chart"></canvas>
+          <div class="insight" id="insight-temp">Insight suhu: --</div>
+        </div>
+
+        <div class="sensor-card mq2">
+          <h3>MQ2 (Gas)</h3>
+          <div class="value" id="mq2">-- ppm</div>
+          <canvas id="mq2Chart" class="mini-chart"></canvas>
+          <div class="insight" id="insight-mq2">Insight MQ2: --</div>
+        </div>
+
+        <div class="sensor-card mq7">
+          <h3>MQ7 (CO)</h3>
+          <div class="value" id="mq7">-- ppm</div>
+          <canvas id="mq7Chart" class="mini-chart"></canvas>
+          <div class="insight" id="insight-mq7">Insight MQ7: --</div>
+        </div>
       </div>
 
-      <canvas id="tempChart"></canvas>
-      <canvas id="mq2Chart"></canvas>
-      <canvas id="mq7Chart"></canvas>
-    </section>
-
-    <section class="log-section">
-      <button id="exportBtn">Export ke Excel</button>
-      <table id="logTable">
-        <thead>
-          <tr>
-            <th>Hari</th>
-            <th>Tanggal</th>
-            <th>Waktu</th>
-            <th>Suhu (°C)</th>
-            <th>MQ2 (ppm)</th>
-            <th>MQ7 (ppm)</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="log-section">
+        <h3>📋 Log & Export</h3>
+        <button id="exportBtn">Export ke Excel</button>
+        <table id="logTable">
+          <thead>
+            <tr>
+              <th>Hari</th>
+              <th>Tanggal</th>
+              <th>Waktu</th>
+              <th>Suhu (°C)</th>
+              <th>MQ2 (ppm)</th>
+              <th>MQ7 (ppm)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </section>
   </main>
 

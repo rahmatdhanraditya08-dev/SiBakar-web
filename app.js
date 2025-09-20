@@ -20,21 +20,78 @@ const exportBtn = document.getElementById("exportBtn");
 // Chart setup
 const tempChart = new Chart(document.getElementById("tempChart"), {
   type: "line",
-  data: { labels: [], datasets: [{ label: "Suhu (°C)", data: [], borderColor: "#d32f2f", fill: false }] },
-  options: { responsive: true }
+  data: {
+    labels: [],
+    datasets: [{
+      label: "Suhu",
+      data: [],
+      borderColor: "#e53935",
+      backgroundColor: "rgba(229,57,53,0.1)",
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: { x: { display: false }, y: { display: false } }
+  }
 });
 
 const mq2Chart = new Chart(document.getElementById("mq2Chart"), {
   type: "line",
-  data: { labels: [], datasets: [{ label: "MQ2 (ppm)", data: [], borderColor: "#f57c00", fill: false }] },
-  options: { responsive: true }
+  data: {
+    labels: [],
+    datasets: [{
+      label: "MQ2",
+      data: [],
+      borderColor: "#fb8c00",
+      backgroundColor: "rgba(251,140,0,0.1)",
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: { x: { display: false }, y: { display: false } }
+  }
 });
 
 const mq7Chart = new Chart(document.getElementById("mq7Chart"), {
   type: "line",
-  data: { labels: [], datasets: [{ label: "MQ7 (ppm)", data: [], borderColor: "#1976d2", fill: false }] },
-  options: { responsive: true }
+  data: {
+    labels: [],
+    datasets: [{
+      label: "MQ7",
+      data: [],
+      borderColor: "#1e88e5",
+      backgroundColor: "rgba(30,136,229,0.1)",
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: { x: { display: false }, y: { display: false } }
+  }
 });
+
+// History for insight
+const history = {
+  suhu: [],
+  mq2: [],
+  mq7: []
+};
+
+// Insight generator
+function generateInsight(arr, label, threshold) {
+  if (arr.length < 2) return `Belum cukup data untuk analisis.`;
+  const latest = arr[arr.length - 1];
+  const prev = arr[arr.length - 2];
+  const delta = latest - prev;
+  const trend = delta > 0 ? "meningkat" : delta < 0 ? "menurun" : "stabil";
+  const status = latest > threshold ? "⚠️ Melebihi ambang!" : "✅ Normal";
+  return `${label} ${trend} (${delta.toFixed(1)}), ${status}`;
+}
 
 // Realtime listener
 onValue(ref(db, "/sensor"), snapshot => {
@@ -44,9 +101,9 @@ onValue(ref(db, "/sensor"), snapshot => {
   const mq7 = data.gas_mq7 || 0;
 
   // Update UI
-  tempEl.textContent = `Suhu: ${suhu.toFixed(1)} °C`;
-  mq2El.textContent = `MQ2: ${mq2.toFixed(1)} ppm`;
-  mq7El.textContent = `MQ7: ${mq7.toFixed(1)} ppm`;
+  tempEl.textContent = `${suhu.toFixed(1)} °C`;
+  mq2El.textContent = `${mq2.toFixed(1)} ppm`;
+  mq7El.textContent = `${mq7.toFixed(1)} ppm`;
 
   // Timestamp
   const now = new Date();
@@ -66,6 +123,19 @@ onValue(ref(db, "/sensor"), snapshot => {
   mq7Chart.data.labels.push(waktu);
   mq7Chart.data.datasets[0].data.push(mq7);
   mq7Chart.update();
+
+  // Save history
+  history.suhu.push(suhu);
+  history.mq2.push(mq2);
+  history.mq7.push(mq7);
+
+  // Update insights
+  document.getElementById("insight-temp").textContent =
+    "Insight suhu: " + generateInsight(history.suhu, "Suhu", 40);
+  document.getElementById("insight-mq2").textContent =
+    "Insight MQ2: " + generateInsight(history.mq2, "Gas MQ2", 300);
+  document.getElementById("insight-mq7").textContent =
+    "Insight MQ7: " + generateInsight(history.mq7, "Gas MQ7", 100);
 
   // Update table
   const row = document.createElement("tr");
